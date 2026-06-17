@@ -6,6 +6,6 @@
   <div id="map-chart" class="chart-panel"></div>
 </section>
 <script src="https://cdn.jsdelivr.net/npm/echarts@5/dist/echarts.min.js"></script>
-<script src="https://fastly.jsdelivr.net/npm/echarts@5/map/js/china.js"></script>
+<script src="{{ url_for('static', filename='vendor/china.js') }}"></script>
 <script src="{{ url_for('static', filename='js/map.js') }}"></script>
 {% endblock %}

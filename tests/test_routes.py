@@ -22,7 +22,9 @@ def test_dashboard_page_renders_title():
 def test_map_analysis_and_history_pages_render():
     app = create_app()
     client = app.test_client()
-    assert client.get("/map").status_code == 200
+    map_response = client.get("/map")
+    assert map_response.status_code == 200
+    assert b"vendor/china.js" in map_response.data
     assert client.get("/analysis").status_code == 200
     assert client.get("/history").status_code == 200
 
