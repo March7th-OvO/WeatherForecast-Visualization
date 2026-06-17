@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+{% block title %}历史天气查询{% endblock %}
+{% block content %}
+<section>
+  <div class="page-header">历史天气查询</div>
+  <div class="search-row">
+    <input id="city-input" type="text" placeholder="请输入城市名，如上海">
+    <button id="search-button" type="button">查询</button>
+  </div>
+  <table class="history-table">
+    <thead>
+      <tr>
+        <th>城市</th>
+        <th>日期</th>
+        <th>天气</th>
+        <th>最高温</th>
+        <th>最低温</th>
+        <th>风力</th>
+      </tr>
+    </thead>
+    <tbody id="history-body"></tbody>
+  </table>
+</section>
+<script src="{{ url_for('static', filename='js/history.js') }}"></script>
+{% endblock %}

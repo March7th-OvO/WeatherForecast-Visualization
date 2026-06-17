@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+{% block title %}首页总览{% endblock %}
+{% block content %}
+<section class="hero">
+  <div class="page-header">首页总览</div>
+  <div class="stats-grid">
+    <div class="stat-card blue"><span id="total-records">0</span><p>总记录数</p></div>
+    <div class="stat-card orange"><span id="total-cities">0</span><p>城市数</p></div>
+    <div class="stat-card green"><span id="highest-temp">0</span><p>最高温</p></div>
+    <div class="stat-card red"><span id="lowest-temp">0</span><p>最低温</p></div>
+  </div>
+  <div id="trend-chart" class="chart-panel"></div>
+  <div id="type-chart" class="chart-panel"></div>
+</section>
+<script src="https://cdn.jsdelivr.net/npm/echarts@5/dist/echarts.min.js"></script>
+<script src="{{ url_for('static', filename='js/dashboard.js') }}"></script>
+{% endblock %}

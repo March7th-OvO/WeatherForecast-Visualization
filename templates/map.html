@@ -1,0 +1,11 @@
+{% extends "base.html" %}
+{% block title %}天气地图{% endblock %}
+{% block content %}
+<section>
+  <div class="page-header">天气地图</div>
+  <div id="map-chart" class="chart-panel"></div>
+</section>
+<script src="https://cdn.jsdelivr.net/npm/echarts@5/dist/echarts.min.js"></script>
+<script src="https://fastly.jsdelivr.net/npm/echarts@5/map/js/china.js"></script>
+<script src="{{ url_for('static', filename='js/map.js') }}"></script>
+{% endblock %}

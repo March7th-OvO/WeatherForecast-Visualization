@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+{% block title %}天气分析{% endblock %}
+{% block content %}
+<section>
+  <div class="page-header">天气分析</div>
+  <div id="high-chart" class="chart-panel"></div>
+  <div id="low-chart" class="chart-panel"></div>
+  <div id="pie-chart" class="chart-panel"></div>
+</section>
+<script src="https://cdn.jsdelivr.net/npm/echarts@5/dist/echarts.min.js"></script>
+<script src="{{ url_for('static', filename='js/analysis.js') }}"></script>
+{% endblock %}

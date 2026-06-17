@@ -1,8 +1,9 @@
+import argparse
 import csv
 from datetime import datetime
 from pathlib import Path
 
-from spider.city_list import CITY_NAMES
+from spider.city_list import load_city_codes
 from spider.weather_client import fetch_weather_html, parse_weather_rows
 
 
@@ -24,21 +25,25 @@ def write_rows(rows: list[dict], output_path: Path) -> None:
         writer.writerows(rows)
 
 
-def build_city_url(city_name: str) -> str:
-    return f"https://example.com/weather/{city_name}"
+def build_city_url(city_code: str) -> str:
+    return f"https://e.weather.com.cn/mweather15d/{city_code}.shtml"
 
 
-def crawl_all_cities() -> list[dict]:
+def crawl_all_cities(max_cities: int = 100) -> list[dict]:
     all_rows: list[dict] = []
-    for city_name in CITY_NAMES:
-        html = fetch_weather_html(build_city_url(city_name))
-        all_rows.extend(parse_weather_rows(city_name, html))
+    for city in load_city_codes(max_cities):
+        html = fetch_weather_html(build_city_url(city["city_code"]))
+        all_rows.extend(parse_weather_rows(city["city_name"], html))
     return all_rows
 
 
 def main() -> None:
+    parser = argparse.ArgumentParser(description="从中国天气网抓取 15 天天气数据")
+    parser.add_argument("--max-cities", type=int, default=100, help="最多抓取的城市/站点数量")
+    args = parser.parse_args()
+
     RAW_DIR.mkdir(parents=True, exist_ok=True)
-    rows = crawl_all_cities()
+    rows = crawl_all_cities(args.max_cities)
     output_path = RAW_DIR / f"weather_raw_{datetime.now():%Y%m%d_%H%M%S}.csv"
     write_rows(rows, output_path)
     print(f"saved {len(rows)} rows to {output_path}")

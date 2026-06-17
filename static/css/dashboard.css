@@ -1,0 +1,103 @@
+body {
+  margin: 0;
+  font-family: "Microsoft YaHei", sans-serif;
+  background: #f2f5f9;
+  color: #1f2937;
+}
+
+.layout {
+  display: flex;
+  min-height: 100vh;
+}
+
+.sidebar {
+  width: 240px;
+  background: #2f3742;
+  color: #fff;
+  padding: 24px;
+  box-sizing: border-box;
+}
+
+.sidebar h1 {
+  margin: 0 0 32px;
+  font-size: 24px;
+}
+
+.sidebar nav a {
+  display: block;
+  color: #d7dde6;
+  text-decoration: none;
+  margin: 18px 0;
+}
+
+.content {
+  flex: 1;
+  padding: 24px;
+}
+
+.page-header {
+  background: #e9edf3;
+  border-radius: 8px;
+  color: #6b7280;
+  margin-bottom: 18px;
+  padding: 16px 20px;
+}
+
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
+}
+
+.stat-card {
+  border-radius: 10px;
+  color: #fff;
+  min-height: 96px;
+  padding: 20px;
+}
+
+.blue { background: #2196f3; }
+.orange { background: #fbbc05; }
+.green { background: #34a853; }
+.red { background: #ea4335; }
+
+.chart-panel {
+  background: #fff;
+  border-radius: 12px;
+  margin-top: 24px;
+  min-height: 320px;
+}
+
+.search-row {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.search-row input,
+.search-row button {
+  border: 1px solid #d1d5db;
+  border-radius: 8px;
+  font-size: 14px;
+  padding: 10px 12px;
+}
+
+.search-row button {
+  background: #2196f3;
+  border: 0;
+  color: #fff;
+  cursor: pointer;
+}
+
+.history-table {
+  background: #fff;
+  border-collapse: collapse;
+  width: 100%;
+}
+
+.history-table th,
+.history-table td {
+  border-bottom: 1px solid #e5e7eb;
+  padding: 12px;
+  text-align: left;
+}

@@ -1,3 +1,4 @@
+import argparse
 from pathlib import Path
 
 import pandas as pd
@@ -29,7 +30,16 @@ def clean_csv(input_path: Path, output_path: Path) -> None:
 
 
 if __name__ == "__main__":
-    latest_file = sorted(RAW_DIR.glob("weather_raw_*.csv"))[-1]
-    output_file = CLEAN_DIR / latest_file.name.replace("raw", "clean")
+    parser = argparse.ArgumentParser(description="清洗原始天气 CSV")
+    parser.add_argument("--input", type=str, default="", help="待清洗的原始 CSV 路径")
+    parser.add_argument("--output", type=str, default="", help="清洗后 CSV 输出路径")
+    args = parser.parse_args()
+
+    latest_file = Path(args.input) if args.input else sorted(RAW_DIR.glob("weather_raw_*.csv"))[-1]
+    output_file = (
+        Path(args.output)
+        if args.output
+        else CLEAN_DIR / latest_file.name.replace("raw", "clean")
+    )
     clean_csv(latest_file, output_file)
     print(f"cleaned file saved to {output_file}")

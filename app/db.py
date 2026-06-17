@@ -13,3 +13,21 @@ def get_connection():
         cursorclass=pymysql.cursors.DictCursor,
         autocommit=True,
     )
+
+
+def fetch_all_weather_rows():
+    try:
+        connection = get_connection()
+        with connection.cursor() as cursor:
+            cursor.execute(
+                """
+                SELECT city_name, weather_date, weather_type, high_temp, low_temp, wind_level
+                FROM weather_daily
+                ORDER BY weather_date DESC
+                """
+            )
+            rows = cursor.fetchall()
+        connection.close()
+        return rows
+    except pymysql.MySQLError:
+        return []

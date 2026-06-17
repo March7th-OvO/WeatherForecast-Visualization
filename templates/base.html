@@ -1,0 +1,25 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}天气数据分析系统{% endblock %}</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/dashboard.css') }}">
+  </head>
+  <body>
+    <div class="layout">
+      <aside class="sidebar">
+        <h1>天气数据分析系统</h1>
+        <nav>
+          <a href="{{ url_for('pages.dashboard') }}">首页</a>
+          <a href="{{ url_for('pages.weather_map') }}">天气地图</a>
+          <a href="{{ url_for('pages.analysis') }}">天气分析</a>
+          <a href="{{ url_for('pages.history') }}">历史天气</a>
+        </nav>
+      </aside>
+      <main class="content">
+        {% block content %}{% endblock %}
+      </main>
+    </div>
+  </body>
+</html>

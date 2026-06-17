@@ -1,3 +1,5 @@
+import argparse
+import os
 from pathlib import Path
 
 import pandas as pd
@@ -44,3 +46,23 @@ def import_clean_csv_to_mysql(input_path: Path, mysql_config: dict) -> int:
 
     connection.close()
     return inserted
+
+
+def load_mysql_config() -> dict:
+    return {
+        "host": os.getenv("MYSQL_HOST", "127.0.0.1"),
+        "port": int(os.getenv("MYSQL_PORT", "3306")),
+        "user": os.getenv("MYSQL_USER", "root"),
+        "password": os.getenv("MYSQL_PASSWORD", "123456"),
+        "database": os.getenv("MYSQL_DATABASE", "weather_visualization"),
+    }
+
+
+if __name__ == "__main__":
+    parser = argparse.ArgumentParser(description="将清洗后的天气 CSV 导入 MySQL")
+    parser.add_argument("--input", type=str, default="", help="待导入的清洗 CSV 路径")
+    args = parser.parse_args()
+
+    input_path = Path(args.input) if args.input else sorted(Path("data/clean").glob("weather_clean_*.csv"))[-1]
+    inserted = import_clean_csv_to_mysql(input_path, load_mysql_config())
+    print(f"imported {inserted} rows from {input_path}")
