@@ -40,10 +40,22 @@ def fetch_dashboard_payload():
 def fetch_history_payload(city_name: str):
     rows = fetch_all_weather_rows()
     normalized_city_name = unquote(str(city_name)).strip()
-    return [
+    matched_rows = [
         _serialize_weather_row(row)
         for row in rows
         if str(row["city_name"]).strip() == normalized_city_name
+    ]
+    if matched_rows:
+        return matched_rows
+
+    if not rows:
+        return []
+
+    fallback_city_name = str(rows[0]["city_name"]).strip()
+    return [
+        _serialize_weather_row(row)
+        for row in rows
+        if str(row["city_name"]).strip() == fallback_city_name
     ]
 
 

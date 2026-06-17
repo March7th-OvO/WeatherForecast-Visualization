@@ -63,3 +63,30 @@ def test_history_api_returns_records(mock_history):
     response = client.get("/api/history?city_name=上海")
     assert response.status_code == 200
     assert response.get_json()[0]["city_name"] == "上海"
+
+
+@patch("app.routes.api.fetch_all_weather_rows")
+def test_history_api_falls_back_to_first_city_when_default_city_missing(mock_rows):
+    mock_rows.return_value = [
+        {
+            "city_name": "原阳",
+            "weather_date": "2026-07-01",
+            "weather_type": "雨",
+            "high_temp": 21,
+            "low_temp": 18,
+            "wind_level": "南风<3级",
+        },
+        {
+            "city_name": "原阳",
+            "weather_date": "2026-06-30",
+            "weather_type": "阴转雨",
+            "high_temp": 31,
+            "low_temp": 20,
+            "wind_level": "东南风<3级",
+        },
+    ]
+    app = create_app()
+    client = app.test_client()
+    response = client.get("/api/history")
+    assert response.status_code == 200
+    assert response.get_json()[0]["city_name"] == "原阳"
