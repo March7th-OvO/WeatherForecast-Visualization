@@ -65,6 +65,24 @@ def build_city_average_temperatures(rows: list[dict]) -> list[dict]:
     return averages
 
 
+def build_province_average_temperatures(
+    rows: list[dict], city_to_province: dict[str, str]
+) -> list[dict]:
+    grouped = defaultdict(list)
+    for row in rows:
+        province_name = city_to_province.get(row["city_name"])
+        if province_name:
+            grouped[province_name].append(row["high_temp"])
+
+    return [
+        {
+            "province_name": province_name,
+            "avg_high_temp": round(sum(values) / len(values), 2),
+        }
+        for province_name, values in grouped.items()
+    ]
+
+
 def _normalize_date(value):
     if isinstance(value, datetime):
         return value.date()

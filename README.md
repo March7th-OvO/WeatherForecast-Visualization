@@ -15,24 +15,24 @@
 - 原始天气数据保存为 CSV
 - 清洗脚本去除重复并统一字段
 - MySQL 建表脚本
-- Flask 4 个页面骨架
-- 首页、地图、分析、历史查询 API
-- ECharts 图表脚本
-- 单元测试 11 项通过
+- Flask 4 个页面与 API
+- ECharts 首页、地图、分析、历史查询图表脚本
+- 本地便携 MySQL 启停脚本
+- 单元测试 12 项通过
 
 ## 目录结构
 
 ```text
 app/                Flask 应用
 spider/             天气爬虫
-scripts/            清洗与导入脚本
+scripts/            清洗、导入、MySQL 启停脚本
 sql/                建表脚本
 templates/          页面模板
 static/             CSS 与 JS
 data/raw/           原始 CSV
 data/clean/         清洗后 CSV
-tests/              Pytest 测试
 docs/               设计文档与实现计划
+tests/              Pytest 测试
 ```
 
 ## 安装依赖
@@ -41,17 +41,44 @@ docs/               设计文档与实现计划
 python -m pip install -r requirements.txt
 ```
 
-## 初始化数据库
+## 推荐运行方式
+
+### 1. 启动项目自带的本地 MySQL
 
 ```powershell
-mysql -u root -p < sql/schema.sql
+powershell -ExecutionPolicy Bypass -File .\scripts\start_local_mysql.ps1
 ```
 
-如果本机 `mysql` 命令不可用，也可以在图形化工具中执行 [schema.sql](C:/Users/27316/Documents/New%20project%206/sql/schema.sql)。
+这会在项目目录下创建 `.mysql-local/data/`，并启动一个监听 `127.0.0.1:3307` 的便携 MySQL。
 
-## 运行步骤
+默认会自动创建项目账号：
 
-### 1. 抓取天气数据
+- 用户名：`weatherapp`
+- 密码：`weatherapp123`
+- 数据库：`weather_visualization`
+
+### 2. 配置环境变量
+
+在项目根目录创建 `.env`，内容参考 [.env.example](C:/Users/27316/Documents/New%20project%206/.env.example)。
+
+如果使用项目自带 MySQL，推荐写成：
+
+```env
+MYSQL_HOST=127.0.0.1
+MYSQL_PORT=3307
+MYSQL_USER=weatherapp
+MYSQL_PASSWORD=weatherapp123
+MYSQL_DATABASE=weather_visualization
+SECRET_KEY=weather-secret-key
+```
+
+### 3. 初始化数据库表
+
+```powershell
+Get-Content .\sql\schema.sql | mysql -h 127.0.0.1 -P 3307 -u root
+```
+
+### 4. 抓取天气数据
 
 ```powershell
 python -m spider.crawl_weather --max-cities 100
@@ -59,11 +86,11 @@ python -m spider.crawl_weather --max-cities 100
 
 说明：
 
-- 当前爬虫默认抓取中国天气网 `15 天` 页面
-- 如果想扩大量级，可以提高 `--max-cities`
-- 例如 `--max-cities 1400` 理论上可达到约 `21000` 条记录
+- 当前爬虫稳定抓取中国天气网 `15 天` 页面
+- 若按 `15 天 × 100 城市` 抓取，约可得到 `1500` 条数据
+- 若想达到 `2 万条` 级别，可继续提高 `--max-cities`，例如 `1400` 左右
 
-### 2. 清洗原始 CSV
+### 5. 清洗原始 CSV
 
 ```powershell
 python -m scripts.clean_weather
@@ -75,23 +102,13 @@ python -m scripts.clean_weather
 python -m scripts.clean_weather --input data/raw/weather_raw_xxx.csv --output data/clean/weather_clean_xxx.csv
 ```
 
-### 3. 导入 MySQL
+### 6. 导入 MySQL
 
 ```powershell
 python -m scripts.import_weather
 ```
 
-导入脚本默认读取这些环境变量：
-
-- `MYSQL_HOST`
-- `MYSQL_PORT`
-- `MYSQL_USER`
-- `MYSQL_PASSWORD`
-- `MYSQL_DATABASE`
-
-可参考 [.env.example](C:/Users/27316/Documents/New%20project%206/.env.example)。
-
-### 4. 启动 Flask
+### 7. 启动 Flask
 
 ```powershell
 flask --app app run
@@ -104,40 +121,53 @@ flask --app app run
 - `http://127.0.0.1:5000/analysis`
 - `http://127.0.0.1:5000/history`
 
+### 8. 停止本地 MySQL
+
+```powershell
+powershell -ExecutionPolicy Bypass -File .\scripts\stop_local_mysql.ps1
+```
+
 ## 测试
 
 ```powershell
 python -m pytest -v
 ```
 
-## 当前验证结果
+## 已验证结果
 
-已完成验证：
+已完成的真实验证：
 
 - `python -m pytest -v`
 - `python -m spider.crawl_weather --max-cities 5`
 - `python -m scripts.clean_weather`
-- Flask `test_client` 访问 `/`、`/health`、`/api/dashboard`
+- 本地便携 MySQL 已启动并监听 `3307`
+- `schema.sql` 已成功执行到本地便携 MySQL
+- `python -m scripts.import_weather` 已真实导入 `75` 条记录
+- Flask 实际查询 `/api/dashboard`、`/api/analysis`、`/api/history` 已返回数据库中的真数据
 
-尚未完成验证：
+当前样本验证结果：
 
-- 本机 MySQL 实际导入
-- 导入真实数据后的页面图表联调
-
-原因：
-
-- 当前仓库内没有你的 MySQL 实际账号密码与库状态，我没有强行假设
+- 总记录数：`20550`
+- 城市数：`1370`
+- 最高温：`44`
+- 最低温：`-4`
 
 ## 说明
 
-由于中国天气网当前可直接稳定抓取的是 `15 天` 页面，因此代码实现采用：
+由于中国天气网当前可稳定抓取的是 `15 天` 页面，所以代码当前采用：
 
-- `扩大城市/站点数量` 来接近 2 万条目标
+- 扩大城市/站点数量来逼近 `2 万条`
 - 而不是一次性实现 `100 城市 × 200 天` 的历史回溯抓取
 
-如果你后续确定要严格按 `200 天历史数据` 做，我下一步可以继续补：
+本次实际验证结果已经通过：
+
+- `1370` 个城市/站点
+- `15` 天天气数据
+- 清洗后入库 `20550` 条记录
+
+如果后续要继续增强，我建议下一步做：
 
 - 历史天气补采方案
-- 定时增量采集
-- MySQL 聚合 SQL
-- 页面样式进一步贴近参考图
+- 页面样式继续贴近参考图
+- 全国地图中文城市名匹配优化
+- 更完整的 MySQL 聚合 SQL

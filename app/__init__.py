@@ -11,7 +11,7 @@ def create_app() -> Flask:
         template_folder="../templates",
         static_folder="../static",
     )
-    app.config.from_object(Config)
+    app.config.from_object(Config())
 
     @app.get("/health")
     def health():
