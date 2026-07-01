@@ -68,6 +68,11 @@ body {
   min-height: 320px;
 }
 
+/* 地图页需要撑满视口剩余高度 */
+#map-chart {
+  height: calc(100vh - 180px);
+}
+
 .search-row {
   display: flex;
   gap: 12px;
