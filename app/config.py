@@ -30,19 +30,21 @@ class Config:
     属性说明：
         SECRET_KEY:      Flask session 加密密钥
         RAW_DATA_DIR:    原始爬虫数据存放目录
-        CLEAN_DATA_DIR:  清洗后数据存放目录
-        CLEAN_DATA_FILE: 手动指定的清洗 CSV 路径；
-                         若为空，系统自动选择 data/clean/ 下最新文件。
+        CLEAN_DATA_DIR:  清洗后 CSV 归档目录
+        MYSQL_*:         MySQL 连接参数，Flask API 统一从数据库读取渲染数据
     """
 
     def __init__(self) -> None:
         # Flask 的 session / cookie 签名密钥，生产环境请改为随机字符串
         self.SECRET_KEY = os.getenv("SECRET_KEY", "weather-secret-key")
 
-        # 数据目录：原始 CSV 和清洗后 CSV 分别存放
+        # 数据目录：原始 CSV 和清洗后 CSV 分别存放；清洗 CSV 作为归档和导入源保留。
         self.RAW_DATA_DIR = str(BASE_DIR / "data" / "raw")
         self.CLEAN_DATA_DIR = str(BASE_DIR / "data" / "clean")
 
-        # 手动指定的清洗数据文件路径（可选）
-        # 例如在 .env 中写: CLEAN_DATA_FILE=data/clean/weather_clean_20260617_160504.csv
-        self.CLEAN_DATA_FILE = os.getenv("CLEAN_DATA_FILE", "")
+        # MySQL 连接配置：运行时 API 会直接查询 weather_daily 表，不再从 CSV 读取。
+        self.MYSQL_HOST = os.getenv("MYSQL_HOST", "127.0.0.1")
+        self.MYSQL_PORT = int(os.getenv("MYSQL_PORT", "3306"))
+        self.MYSQL_USER = os.getenv("MYSQL_USER", "root")
+        self.MYSQL_PASSWORD = os.getenv("MYSQL_PASSWORD", "123456")
+        self.MYSQL_DATABASE = os.getenv("MYSQL_DATABASE", "weather_visualization")

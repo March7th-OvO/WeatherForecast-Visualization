@@ -1,7 +1,7 @@
 """
 天气数据清洗脚本。
 
-将爬虫产出的原始 CSV 转化为结构统一、可直接供 Flask 使用的清洗 CSV。
+将爬虫产出的原始 CSV 转化为结构统一的清洗 CSV，并默认持久化到 MySQL。
 
 清洗规则：
 1. 所有字符串字段去除首尾空格
@@ -14,6 +14,9 @@
 
     # 手动指定输入输出文件
     python -m scripts.clean_weather --input data/raw/weather_raw_xxx.csv --output data/clean/weather_clean_xxx.csv
+
+    # 只生成清洗 CSV，不导入 MySQL
+    python -m scripts.clean_weather --skip-mysql
 """
 
 import argparse
@@ -91,6 +94,11 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="清洗原始天气 CSV")
     parser.add_argument("--input", type=str, default="", help="待清洗的原始 CSV 路径")
     parser.add_argument("--output", type=str, default="", help="清洗后 CSV 输出路径")
+    parser.add_argument(
+        "--skip-mysql",
+        action="store_true",
+        help="只输出清洗 CSV，不将结果导入 MySQL",
+    )
     args = parser.parse_args()
 
     # 自动选择最新的原始 CSV（按文件名排序取最后一个）
@@ -109,3 +117,10 @@ if __name__ == "__main__":
 
     clean_csv(latest_file, output_file)
     print(f"cleaned file saved to {output_file}")
+
+    if not args.skip_mysql:
+        # 清洗后的 CSV 是导入源；页面渲染时 Flask API 会直接从 MySQL 读取数据。
+        from scripts.import_weather import import_clean_csv_to_mysql, load_mysql_config
+
+        imported = import_clean_csv_to_mysql(output_file, load_mysql_config())
+        print(f"imported {imported} rows into MySQL from {output_file}")

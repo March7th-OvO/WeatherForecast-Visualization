@@ -2,7 +2,7 @@
 测试 Flask 路由 —— 页面渲染和 API 响应。
 
 使用 Flask 内置的 test_client() 发起模拟 HTTP 请求，
-并通过 @patch 替换数据获取函数来隔离 CSV 文件依赖。
+并通过 @patch 替换数据获取函数来隔离 MySQL 依赖。
 """
 
 from unittest.mock import patch
@@ -41,7 +41,7 @@ def test_map_analysis_and_history_pages_render():
     """
     验证地图、分析、历史三个页面都能正常返回 200。
 
-    页面渲染不依赖 CSV 数据（数据由前端 AJAX 异步加载）。
+    页面渲染不依赖 MySQL 数据（数据由前端 AJAX 异步加载）。
     """
     app = create_app()
     client = app.test_client()
@@ -61,7 +61,7 @@ def test_dashboard_api_returns_overview(mock_payload):
     验证首页 Dashboard API（mock 数据）。
 
     @patch 替换 fetch_dashboard_payload 函数，
-    避免测试依赖真实的 CSV 文件。
+    避免测试依赖真实的 MySQL 服务。
     """
     mock_payload.return_value = {
         "overview": {
