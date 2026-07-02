@@ -11,15 +11,26 @@ export function AnalysisPage() {
 
   const highOption = useMemo(
     () => ({
-      tooltip: { trigger: "axis" },
+      color: ["#e8590c"],
+      tooltip: { trigger: "axis", valueFormatter: (value: number) => `${value}°C` },
       grid: { left: 42, right: 24, top: 28, bottom: 42 },
-      xAxis: { type: "category", data: data?.high_top10.map((item) => item.city_name) ?? [] },
-      yAxis: { type: "value" },
+      xAxis: {
+        type: "category",
+        data: data?.high_top10.map((item) => item.city_name) ?? [],
+        axisLine: { lineStyle: { color: "#b8c7d9" } },
+        axisLabel: { color: "#5f6e82" },
+      },
+      yAxis: {
+        type: "value",
+        axisLabel: { color: "#5f6e82", formatter: "{value}°C" },
+        splitLine: { lineStyle: { color: "#edf2f7" } },
+      },
       series: [
         {
           type: "bar",
+          name: "平均最高温",
           data: data?.high_top10.map((item) => item.avg_high_temp) ?? [],
-          itemStyle: { color: "#f08c00", borderRadius: [4, 4, 0, 0] },
+          itemStyle: { color: "#e8590c", borderRadius: [4, 4, 0, 0] },
         },
       ],
     }),
@@ -28,15 +39,26 @@ export function AnalysisPage() {
 
   const lowOption = useMemo(
     () => ({
-      tooltip: { trigger: "axis" },
+      color: ["#2f80ed"],
+      tooltip: { trigger: "axis", valueFormatter: (value: number) => `${value}°C` },
       grid: { left: 42, right: 24, top: 28, bottom: 42 },
-      xAxis: { type: "category", data: data?.low_top10.map((item) => item.city_name) ?? [] },
-      yAxis: { type: "value" },
+      xAxis: {
+        type: "category",
+        data: data?.low_top10.map((item) => item.city_name) ?? [],
+        axisLine: { lineStyle: { color: "#b8c7d9" } },
+        axisLabel: { color: "#5f6e82" },
+      },
+      yAxis: {
+        type: "value",
+        axisLabel: { color: "#5f6e82", formatter: "{value}°C" },
+        splitLine: { lineStyle: { color: "#edf2f7" } },
+      },
       series: [
         {
           type: "bar",
+          name: "平均最低温",
           data: data?.low_top10.map((item) => item.avg_low_temp) ?? [],
-          itemStyle: { color: "#1971c2", borderRadius: [4, 4, 0, 0] },
+          itemStyle: { color: "#2f80ed", borderRadius: [4, 4, 0, 0] },
         },
       ],
     }),
@@ -45,13 +67,16 @@ export function AnalysisPage() {
 
   const pieOption = useMemo(
     () => ({
+      color: ["#0f62fe", "#03a9d8", "#2f9e44", "#f2b705", "#e8590c", "#d92d20"],
       tooltip: { trigger: "item" },
-      legend: { bottom: 0 },
+      legend: { bottom: 0, textStyle: { color: "#5f6e82" } },
       series: [
         {
           type: "pie",
           radius: ["42%", "70%"],
           center: ["50%", "45%"],
+          label: { color: "#5f6e82" },
+          itemStyle: { borderColor: "#ffffff", borderWidth: 2 },
           data:
             data?.weather_types.map((item) => ({
               name: item.weather_type,

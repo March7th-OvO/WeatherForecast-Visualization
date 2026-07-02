@@ -1,5 +1,5 @@
-import { afterEach, beforeEach, expect, test, vi } from "vitest";
 import { render, screen } from "@testing-library/react";
+import { afterEach, beforeEach, expect, test, vi } from "vitest";
 
 import { App } from "./App";
 
@@ -31,7 +31,7 @@ afterEach(() => {
 test("renders navigation for the four weather views", () => {
   render(<App />);
 
-  expect(screen.getByText("天气数据分析系统")).toBeInTheDocument();
+  expect(screen.getByText("气象数据观测台")).toBeInTheDocument();
   expect(screen.getByRole("link", { name: /首页/ })).toHaveAttribute("href", "/");
   expect(screen.getByRole("link", { name: /天气地图/ })).toHaveAttribute("href", "/map");
   expect(screen.getByRole("link", { name: /天气分析/ })).toHaveAttribute("href", "/analysis");

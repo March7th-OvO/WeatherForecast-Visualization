@@ -11,21 +11,37 @@ export function WeatherMapPage() {
 
   const mapOption = useMemo(
     () => ({
-      tooltip: { trigger: "item", formatter: "{b}: {c}°C" },
+      tooltip: {
+        trigger: "item",
+        formatter: "{b}: {c}°C",
+        backgroundColor: "rgba(16, 32, 51, 0.92)",
+        borderColor: "rgba(255, 255, 255, 0.12)",
+        textStyle: { color: "#ffffff" },
+      },
       visualMap: {
         min: -20,
         max: 40,
         left: 18,
         bottom: 18,
         calculable: true,
-        inRange: { color: ["#4dabf7", "#ffd43b", "#e03131"] },
+        textStyle: { color: "#5f6e82" },
+        inRange: { color: ["#2f80ed", "#03a9d8", "#f2b705", "#e8590c", "#d92d20"] },
       },
       series: [
         {
           type: "map",
           map: "china",
           roam: true,
-          emphasis: { label: { show: true } },
+          label: { color: "#5f6e82" },
+          itemStyle: {
+            borderColor: "#ffffff",
+            borderWidth: 0.8,
+            areaColor: "#e8f1ff",
+          },
+          emphasis: {
+            label: { show: true, color: "#172033", fontWeight: 700 },
+            itemStyle: { areaColor: "#9fd2ff" },
+          },
           data:
             data?.provinces.map((item) => ({
               name: item.province_name,

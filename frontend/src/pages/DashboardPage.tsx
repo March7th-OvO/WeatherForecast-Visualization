@@ -15,19 +15,30 @@ export function DashboardPage() {
 
   const trendOption = useMemo(
     () => ({
-      tooltip: { trigger: "axis" },
+      color: ["#0f62fe"],
+      tooltip: { trigger: "axis", valueFormatter: (value: number) => `${value}°C` },
       grid: { left: 42, right: 24, top: 34, bottom: 34 },
-      xAxis: { type: "category", data: data?.trend.map((item) => item.weather_date) ?? [] },
-      yAxis: { type: "value" },
+      xAxis: {
+        type: "category",
+        data: data?.trend.map((item) => item.weather_date) ?? [],
+        axisLine: { lineStyle: { color: "#b8c7d9" } },
+        axisLabel: { color: "#5f6e82" },
+      },
+      yAxis: {
+        type: "value",
+        axisLabel: { color: "#5f6e82", formatter: "{value}°C" },
+        splitLine: { lineStyle: { color: "#edf2f7" } },
+      },
       series: [
         {
           type: "line",
+          name: "平均最高温",
           data: data?.trend.map((item) => item.avg_high_temp) ?? [],
           smooth: true,
           symbolSize: 7,
-          lineStyle: { width: 3, color: "#1c7ed6" },
-          itemStyle: { color: "#1c7ed6" },
-          areaStyle: { color: "rgba(28, 126, 214, 0.12)" },
+          lineStyle: { width: 3, color: "#0f62fe" },
+          itemStyle: { color: "#0f62fe" },
+          areaStyle: { color: "rgba(15, 98, 254, 0.12)" },
         },
       ],
     }),
@@ -36,15 +47,26 @@ export function DashboardPage() {
 
   const typeOption = useMemo(
     () => ({
+      color: ["#03a9d8"],
       tooltip: { trigger: "axis" },
       grid: { left: 42, right: 24, top: 34, bottom: 42 },
-      xAxis: { type: "category", data: data?.weather_types.map((item) => item.weather_type) ?? [] },
-      yAxis: { type: "value" },
+      xAxis: {
+        type: "category",
+        data: data?.weather_types.map((item) => item.weather_type) ?? [],
+        axisLine: { lineStyle: { color: "#b8c7d9" } },
+        axisLabel: { color: "#5f6e82" },
+      },
+      yAxis: {
+        type: "value",
+        axisLabel: { color: "#5f6e82" },
+        splitLine: { lineStyle: { color: "#edf2f7" } },
+      },
       series: [
         {
           type: "bar",
+          name: "记录数",
           data: data?.weather_types.map((item) => item.count) ?? [],
-          itemStyle: { color: "#2f9e44", borderRadius: [4, 4, 0, 0] },
+          itemStyle: { color: "#03a9d8", borderRadius: [4, 4, 0, 0] },
         },
       ],
     }),
@@ -84,13 +106,13 @@ export function DashboardPage() {
         <StatCard
           label="最高温"
           value={`${data.overview.highest_temp}°C`}
-          tone="green"
+          tone="hot"
           icon={ThermometerSun}
         />
         <StatCard
           label="最低温"
           value={`${data.overview.lowest_temp}°C`}
-          tone="red"
+          tone="cold"
           icon={ThermometerSnowflake}
         />
       </div>

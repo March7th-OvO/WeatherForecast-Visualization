@@ -13,8 +13,10 @@ export function AppLayout() {
     <div className="app-shell">
       <aside className="sidebar">
         <div className="brand">
-          <CloudSun size={30} aria-hidden="true" />
-          <h1>天气数据分析系统</h1>
+          <span className="brand-mark" aria-hidden="true">
+            <CloudSun size={28} />
+          </span>
+          <h1>气象数据观测台</h1>
         </div>
         <nav className="nav-list" aria-label="主导航">
           {navItems.map((item) => (
