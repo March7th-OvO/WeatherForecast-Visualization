@@ -46,13 +46,39 @@ def test_map_analysis_and_history_pages_render():
     app = create_app()
     client = app.test_client()
 
-    # 地图页面应引用 china.js 中国地图地理数据
+    # 未构建 React 前端时，地图页面仍回退到旧 Jinja 模板并引用 china.js。
+    # 已构建 React 前端时，页面由 SPA 入口接管。
     map_response = client.get("/map")
     assert map_response.status_code == 200
-    assert b"vendor/china.js" in map_response.data
+    assert b"vendor/china.js" in map_response.data or b'id="root"' in map_response.data
 
     assert client.get("/analysis").status_code == 200
     assert client.get("/history").status_code == 200
+
+
+def test_page_routes_serve_react_build_when_dist_exists(tmp_path, monkeypatch):
+    """
+    验证 React 构建产物存在时，页面路由返回 SPA 入口。
+
+    这样生产环境可以由 Flask 继续提供 /api/*，同时把 /、/map、/analysis、
+    /history 交给 React Router 处理。
+    """
+    dist_dir = tmp_path / "dist"
+    dist_dir.mkdir()
+    (dist_dir / "index.html").write_text(
+        '<!doctype html><div id="root">React App</div>',
+        encoding="utf-8",
+    )
+
+    monkeypatch.setattr("app.routes.pages.FRONTEND_DIST_DIR", dist_dir)
+
+    app = create_app()
+    client = app.test_client()
+
+    response = client.get("/analysis")
+
+    assert response.status_code == 200
+    assert b"React App" in response.data
 
 
 @patch("app.routes.api.fetch_dashboard_payload")

@@ -6,3 +6,5 @@ __pycache__/
 data/raw/*.csv
 data/clean/*.csv
 .mysql-local/
+frontend/node_modules/
+frontend/dist/
