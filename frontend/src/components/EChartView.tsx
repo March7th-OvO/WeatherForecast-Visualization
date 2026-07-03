@@ -11,6 +11,7 @@ interface EChartViewProps {
   option: Record<string, unknown>;
   className?: string;
   requiresChinaMap?: boolean;
+  onEvents?: Record<string, (params: unknown) => void>;
 }
 
 let chinaMapPromise: Promise<void> | null = null;
@@ -39,6 +40,7 @@ export function EChartView({
   option,
   className = "",
   requiresChinaMap = false,
+  onEvents,
 }: EChartViewProps) {
   const chartRef = useRef<HTMLDivElement | null>(null);
 
@@ -61,6 +63,9 @@ export function EChartView({
 
       chart = echarts.init(chartRef.current);
       chart.setOption(option as echarts.EChartsOption);
+      Object.entries(onEvents ?? {}).forEach(([eventName, handler]) => {
+        chart?.on(eventName, handler);
+      });
     }
 
     renderChart();
@@ -71,9 +76,12 @@ export function EChartView({
     return () => {
       disposed = true;
       window.removeEventListener("resize", handleResize);
+      Object.entries(onEvents ?? {}).forEach(([eventName, handler]) => {
+        chart?.off(eventName, handler);
+      });
       chart?.dispose();
     };
-  }, [option, requiresChinaMap]);
+  }, [option, requiresChinaMap, onEvents]);
 
   return <div className={`chart-canvas ${className}`} ref={chartRef} />;
 }

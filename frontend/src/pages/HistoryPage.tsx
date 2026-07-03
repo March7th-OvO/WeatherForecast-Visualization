@@ -25,7 +25,7 @@ export function HistoryPage() {
 
       {loading && <LoadingState message="正在加载历史天气" />}
       {error && <ErrorState message={error} />}
-      {!loading && !error && <HistoryTable rows={data ?? []} />}
+      {!loading && !error && <HistoryTable key={cityName} rows={data ?? []} />}
     </section>
   );
 }

@@ -314,6 +314,83 @@ button {
   grid-column: 1 / -1;
 }
 
+.weather-type-panel .chart-canvas {
+  height: 560px;
+}
+
+.weather-type-chart {
+  position: relative;
+}
+
+.weather-type-center {
+  position: absolute;
+  top: 50%;
+  left: 34%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 190px;
+  min-height: 112px;
+  color: var(--weather-ink);
+  pointer-events: none;
+  text-align: center;
+  transform: translate(-50%, -50%) scale(0.98);
+  opacity: 0.46;
+  filter: blur(0);
+  transition:
+    opacity 220ms ease,
+    transform 220ms ease,
+    filter 220ms ease;
+}
+
+.weather-type-center.active {
+  opacity: 1;
+  transform: translate(-50%, -50%) scale(1);
+}
+
+.weather-type-center-content {
+  display: grid;
+  gap: 4px;
+  animation: weatherTypeCenterIn 260ms cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.weather-type-center-content strong {
+  font-size: 22px;
+  line-height: 1.2;
+}
+
+.weather-type-center-content span {
+  color: var(--weather-muted);
+  font-size: 15px;
+}
+
+.weather-type-center-content em {
+  color: var(--weather-blue);
+  font-size: 19px;
+  font-style: normal;
+  font-weight: 800;
+}
+
+.weather-type-center-placeholder {
+  color: var(--weather-subtle);
+  font-size: 14px;
+  animation: weatherTypeCenterIn 220ms ease both;
+}
+
+@keyframes weatherTypeCenterIn {
+  from {
+    opacity: 0;
+    transform: translateY(8px) scale(0.98);
+    filter: blur(3px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+    filter: blur(0);
+  }
+}
+
 .search-row {
   display: flex;
   gap: 12px;
@@ -386,6 +463,23 @@ button {
   background: #f8fbff;
 }
 
+.history-row {
+  animation: historyRowReveal 460ms cubic-bezier(0.22, 1, 0.36, 1) both;
+  will-change: opacity, transform;
+}
+
+@keyframes historyRowReveal {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
 .page-state,
 .empty-state {
   border: 1px dashed var(--weather-border-strong);
@@ -449,6 +543,16 @@ button {
     padding: 16px;
   }
 
+  .weather-type-panel .chart-canvas {
+    height: 560px;
+  }
+
+  .weather-type-center {
+    top: 38%;
+    left: 50%;
+    width: 168px;
+  }
+
   .search-row {
     display: grid;
   }
@@ -456,5 +560,11 @@ button {
   .search-row input,
   .search-row button {
     width: 100%;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .history-row {
+    animation: none;
   }
 }

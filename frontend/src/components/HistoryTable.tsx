@@ -23,8 +23,12 @@ export function HistoryTable({ rows }: HistoryTableProps) {
           </tr>
         </thead>
         <tbody>
-          {rows.map((row) => (
-            <tr key={`${row.city_name}-${row.weather_date}`}>
+          {rows.map((row, index) => (
+            <tr
+              key={`${row.city_name}-${row.weather_date}`}
+              className="history-row"
+              style={{ animationDelay: `${index * 55}ms` }}
+            >
               <td>{row.city_name}</td>
               <td>{row.weather_date}</td>
               <td>{row.weather_type}</td>

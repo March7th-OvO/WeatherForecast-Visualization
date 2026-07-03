@@ -1,4 +1,4 @@
-import { useMemo } from "react";
+import { useCallback, useMemo, useState } from "react";
 
 import { getAnalysis } from "../api/weatherApi";
 import { ChartPanel } from "../components/ChartPanel";
@@ -6,8 +6,50 @@ import { EChartView } from "../components/EChartView";
 import { ErrorState, LoadingState } from "../components/PageState";
 import { useAsyncData } from "../hooks/useAsyncData";
 
+interface WeatherTypeFocus {
+  name: string;
+  value: string;
+  percent: string;
+}
+
 export function AnalysisPage() {
   const { data, error, loading } = useAsyncData(getAnalysis, []);
+  const [focusedWeatherType, setFocusedWeatherType] = useState<WeatherTypeFocus | null>(null);
+
+  const handleWeatherTypeFocus = useCallback((params: unknown) => {
+    const event = params as {
+      componentType?: string;
+      seriesType?: string;
+      name?: unknown;
+      value?: unknown;
+      percent?: unknown;
+    };
+
+    if (event.componentType !== "series" || event.seriesType !== "pie") {
+      return;
+    }
+
+    const percent =
+      typeof event.percent === "number" ? event.percent.toFixed(1) : String(event.percent ?? "-");
+
+    setFocusedWeatherType({
+      name: String(event.name ?? "-"),
+      value: String(event.value ?? "-"),
+      percent,
+    });
+  }, []);
+
+  const handleWeatherTypeLeave = useCallback(() => {
+    setFocusedWeatherType(null);
+  }, []);
+
+  const weatherTypeEvents = useMemo(
+    () => ({
+      mouseover: handleWeatherTypeFocus,
+      globalout: handleWeatherTypeLeave,
+    }),
+    [handleWeatherTypeFocus, handleWeatherTypeLeave],
+  );
 
   const highOption = useMemo(
     () => ({
@@ -67,21 +109,84 @@ export function AnalysisPage() {
 
   const pieOption = useMemo(
     () => ({
-      color: ["#0f62fe", "#03a9d8", "#2f9e44", "#f2b705", "#e8590c", "#d92d20"],
-      tooltip: { trigger: "item" },
-      legend: { bottom: 0, textStyle: { color: "#5f6e82" } },
-      series: [
+      baseOption: {
+        animation: true,
+        animationDuration: 700,
+        animationDurationUpdate: 420,
+        animationEasing: "cubicOut",
+        animationEasingUpdate: "cubicInOut",
+        color: ["#0f62fe", "#03a9d8", "#2f9e44", "#f2b705", "#e8590c", "#d92d20"],
+        stateAnimation: {
+          duration: 320,
+          easing: "cubicOut",
+        },
+        tooltip: { show: false },
+        legend: {
+          type: "scroll",
+          orient: "vertical",
+          right: 8,
+          top: 22,
+          bottom: 16,
+          width: 260,
+          itemGap: 10,
+          pageIconColor: "#0f62fe",
+          pageIconInactiveColor: "#b8c7d9",
+          pageTextStyle: { color: "#5f6e82" },
+          textStyle: { color: "#5f6e82" },
+        },
+        series: [
+          {
+            type: "pie",
+            radius: [130, 224],
+            center: ["34%", "50%"],
+            avoidLabelOverlap: true,
+            minShowLabelAngle: 8,
+            label: { show: false },
+            emphasis: {
+              scale: true,
+              scaleSize: 8,
+              focus: "self",
+              label: { show: false },
+              itemStyle: {
+                shadowBlur: 18,
+                shadowColor: "rgba(17, 35, 60, 0.18)",
+              },
+            },
+            blur: {
+              itemStyle: {
+                opacity: 0.72,
+              },
+            },
+            labelLine: { show: false },
+            itemStyle: { borderWidth: 0 },
+            data:
+              data?.weather_types.map((item) => ({
+                name: item.weather_type,
+                value: item.count,
+              })) ?? [],
+          },
+        ],
+      },
+      media: [
         {
-          type: "pie",
-          radius: ["42%", "70%"],
-          center: ["50%", "45%"],
-          label: { color: "#5f6e82" },
-          itemStyle: { borderColor: "#ffffff", borderWidth: 2 },
-          data:
-            data?.weather_types.map((item) => ({
-              name: item.weather_type,
-              value: item.count,
-            })) ?? [],
+          query: { maxWidth: 760 },
+          option: {
+            legend: {
+              orient: "horizontal",
+              left: 0,
+              right: 0,
+              top: "auto",
+              bottom: 0,
+              width: "auto",
+              height: 64,
+            },
+            series: [
+              {
+                radius: [112, 196],
+                center: ["50%", "38%"],
+              },
+            ],
+          },
         },
       ],
     }),
@@ -111,8 +216,27 @@ export function AnalysisPage() {
         <ChartPanel title="城市平均最低温 Top10">
           <EChartView option={lowOption} />
         </ChartPanel>
-        <ChartPanel title="天气类型占比" className="wide-panel">
-          <EChartView option={pieOption} />
+        <ChartPanel title="天气类型占比" className="wide-panel weather-type-panel">
+          <div className="weather-type-chart">
+            <EChartView option={pieOption} onEvents={weatherTypeEvents} />
+            <div
+              className={`weather-type-center${focusedWeatherType ? " active" : ""}`}
+              aria-live="polite"
+            >
+              {focusedWeatherType ? (
+                <div
+                  key={`${focusedWeatherType.name}-${focusedWeatherType.value}-${focusedWeatherType.percent}`}
+                  className="weather-type-center-content"
+                >
+                  <strong>{focusedWeatherType.name}</strong>
+                  <span>{focusedWeatherType.value} 条</span>
+                  <em>{focusedWeatherType.percent}%</em>
+                </div>
+              ) : (
+                <div className="weather-type-center-placeholder">悬停查看</div>
+              )}
+            </div>
+          </div>
         </ChartPanel>
       </div>
     </section>
